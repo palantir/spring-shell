@@ -1,3 +1,6 @@
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
 task sourceJar(type: Jar, dependsOn:classes) {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -20,7 +23,7 @@ bintray {
     key = System.getenv('BINTRAY_KEY')
     pkg {
         repo = 'releases'
-        name = project.group
+        name = 'spring-shell'
         userOrg = 'palantir'
         licenses = ['Apache-2.0']
         publications = ['bintray']
@@ -32,6 +35,6 @@ bintrayUpload.onlyIf {
     project.version.isTag == true
 }
 
-bintrayUpload.dependsOn { generatePomFileForPluginPublicationPublication }
+bintrayUpload.dependsOn { generatePomFileForBintrayPublication }
 bintrayUpload.dependsOn { sourceJar }
 bintrayUpload.dependsOn { build }
