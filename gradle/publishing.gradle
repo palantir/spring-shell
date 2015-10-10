@@ -1,0 +1,37 @@
+task sourceJar(type: Jar, dependsOn:classes) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+publishing {
+    publications {
+        bintray(MavenPublication) {
+            from components.java
+
+            artifact(sourceJar) {
+                classifier 'sources'
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'releases'
+        name = project.group
+        userOrg = 'palantir'
+        licenses = ['Apache-2.0']
+        publications = ['bintray']
+
+    }
+}
+
+bintrayUpload.onlyIf {
+    project.version.isTag == true
+}
+
+bintrayUpload.dependsOn { generatePomFileForPluginPublicationPublication }
+bintrayUpload.dependsOn { sourceJar }
+bintrayUpload.dependsOn { build }
