@@ -1,3 +1,7 @@
+NOTE: This is a fork of the the official Spring Shell repository in order to accommodate bug and feature fixes in timely
+manner. The goal is to eventually bring this back into the mainline repository.
+
+
 :currentReleaseVersion: 1.1.0.RELEASE
 :currentSnapshotVersion: 1.2.0.BUILD-SNAPSHOT
 
