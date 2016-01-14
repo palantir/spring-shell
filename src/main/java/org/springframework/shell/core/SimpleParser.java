@@ -552,7 +552,7 @@ public class SimpleParser implements Parser {
 				}
 				return bufferRemaining.substring(1);
 			}
-			return bufferRemaining;
+			return "";
 		}
 	}
 
@@ -998,7 +998,7 @@ public class SimpleParser implements Parser {
 		results.add(new Completion(strBuilder.toString()));
 	}
 
-	public void obtainHelp(
+	public String obtainHelp(
 			@CliOption(key = {"", "command"}, optionContext = "availableCommands", help = "Command name to provide help for")
 			String buffer) {
 		synchronized (mutex) {
@@ -1089,7 +1089,7 @@ public class SimpleParser implements Parser {
 				sb.append(s).append(OsUtils.LINE_SEPARATOR);
 			}
 
-			LOGGER.info(sb.toString());
+			return sb.toString();
 			// LOGGER.warning("** Type 'hint' (without the quotes) and hit ENTER for step-by-step guidance **"
 			// + StringUtils.LINE_SEPARATOR);
 		}
