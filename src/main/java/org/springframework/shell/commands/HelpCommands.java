@@ -23,7 +23,10 @@ import org.springframework.shell.core.JLineShellComponent;
 import org.springframework.shell.core.SimpleParser;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
+import org.springframework.shell.support.logging.HandlerUtils;
 import org.springframework.stereotype.Component;
+
+import java.util.logging.Logger;
 
 /**
  * Provides a listing of commands known to the shell.
@@ -37,6 +40,7 @@ import org.springframework.stereotype.Component;
 public class HelpCommands implements CommandMarker, ApplicationContextAware {
 
 	private ApplicationContext ctx;
+	private static Logger LOGGER = HandlerUtils.getLogger(HelpCommands.class);
 
 	@CliCommand(value = "help", help = "List all commands usage")
 	public void obtainHelp(
@@ -44,7 +48,8 @@ public class HelpCommands implements CommandMarker, ApplicationContextAware {
 			String buffer) {
 		JLineShellComponent shell = ctx.getBean("shell", JLineShellComponent.class);
 		SimpleParser parser = shell.getSimpleParser();
-		parser.obtainHelp(buffer);
+		String helpString = parser.obtainHelp(buffer);
+		LOGGER.info(helpString);
 	}
 
 	@Override

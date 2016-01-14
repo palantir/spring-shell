@@ -16,24 +16,32 @@
 
 package org.springframework.shell.core;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import org.hamcrest.Description;
+import org.hamcrest.DiagnosingMatcher;
+import org.hamcrest.Matcher;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.shell.converters.StringConverter;
+import org.springframework.shell.core.annotation.CliCommand;
+import org.springframework.shell.core.annotation.CliOption;
+import org.springframework.shell.event.ParseResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.hamcrest.Description;
-import org.hamcrest.DiagnosingMatcher;
-import org.hamcrest.Matcher;
-import org.junit.Assert;
-import org.junit.Test;
-
-import org.springframework.shell.converters.StringConverter;
-import org.springframework.shell.core.annotation.CliCommand;
-import org.springframework.shell.core.annotation.CliOption;
-import org.springframework.shell.event.ParseResult;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for parsing and completion logic.
@@ -449,6 +457,46 @@ public class SimpleParserTests {
 		offset = parser.completeAdvanced(buffer, buffer.length(), candidates);
 
 		assertThat(candidates, not(hasItem(completionThat(startsWith("fooBar ")))));
+	}
+
+	private static class HelpCommands implements CommandMarker {
+		@CliCommand(value = "foo", help = "foo help")
+		public String foo(@CliOption(key = "fooArg")
+						  String arg) {
+			return "foo " + arg;
+		}
+
+		@CliCommand(value = "fooBar", help = "fooBar help")
+		public String fooBar(@CliOption(key = "")
+							 String arg) {
+			return "fooBar " + arg;
+		}
+	}
+
+	/**
+	 * Checks that if `help validCommand` is entered, then detailed help for validCommand is
+	 * provided even if validCommandThatIsLonger is also a command.
+	 */
+	@Test
+	public void testHelpCommandFalseAmbiguity() {
+		parser.add(new HelpCommands());
+		buffer = "foo";
+		String helpString = parser.obtainHelp(buffer);
+		assertThat(helpString, containsString("fooArg"));
+		assertThat(helpString, not(containsString("fooBar")));
+	}
+
+	/**
+	 * Checks that if `help prefixOfSeveralCommands` is entered, then a list of brief help prompts
+	 * is provided for each command which has prefixOfSeveralCommands as a prefix.
+	 */
+	@Test
+	public void testHelpCommandRealAmbiguity() {
+		parser.add(new HelpCommands());
+		buffer = "fo";
+		String helpString = parser.obtainHelp(buffer);
+		assertThat(helpString, containsString("* foo"));
+		assertThat(helpString, containsString("* fooBar"));
 	}
 
 	@Test

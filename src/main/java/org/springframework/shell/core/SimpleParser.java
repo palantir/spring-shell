@@ -513,7 +513,9 @@ public class SimpleParser implements Parser {
 
 	/**
 	 * See whether 'buffer' could be an invocation of 'command', and if so, return the remaining part of the buffer.
+	 *
 	 * @param strictMatching true if ALL words of 'command' need to be matched
+	 * @return null if 'buffer' is not a match, or remaining part of buffer after invocation of 'command' if it is a match.
 	 */
 	static String isMatch(final String buffer, final String command, final boolean strictMatching) {
 		Assert.isTrue(command.charAt(command.length() - 1) != ' ', "Command must not end with a space");
@@ -550,7 +552,7 @@ public class SimpleParser implements Parser {
 				}
 				return bufferRemaining.substring(1);
 			}
-			return bufferRemaining;
+			return "";
 		}
 	}
 
@@ -996,7 +998,7 @@ public class SimpleParser implements Parser {
 		results.add(new Completion(strBuilder.toString()));
 	}
 
-	public void obtainHelp(
+	public String obtainHelp(
 			@CliOption(key = {"", "command"}, optionContext = "availableCommands", help = "Command name to provide help for")
 			String buffer) {
 		synchronized (mutex) {
@@ -1006,8 +1008,19 @@ public class SimpleParser implements Parser {
 
 			StringBuilder sb = new StringBuilder();
 
-			// Figure out if there's a single command we can offer help for
-			final Collection<MethodTarget> matchingTargets = locateTargets(buffer, false, false);
+			Collection<MethodTarget> matchingTargets = locateTargets(buffer, false, false);
+			// locateTargets will return results which buffer is a prefix of, but if buffer exactly matches a command,
+			// then we only want help for that command.
+			MethodTarget possibleExactMatch = null;
+			for (MethodTarget methodTarget : matchingTargets) {
+				if (methodTarget.getMethod().getName().equals(buffer)) {
+					possibleExactMatch = methodTarget;
+					break;
+				}
+			}
+			if (possibleExactMatch != null) {
+				matchingTargets = Collections.singleton(possibleExactMatch);
+			}
 			if (matchingTargets.size() == 1) {
 				// Single command help
 				MethodTarget methodTarget = matchingTargets.iterator().next();
@@ -1076,7 +1089,7 @@ public class SimpleParser implements Parser {
 				sb.append(s).append(OsUtils.LINE_SEPARATOR);
 			}
 
-			LOGGER.info(sb.toString());
+			return sb.toString();
 			// LOGGER.warning("** Type 'hint' (without the quotes) and hit ENTER for step-by-step guidance **"
 			// + StringUtils.LINE_SEPARATOR);
 		}
