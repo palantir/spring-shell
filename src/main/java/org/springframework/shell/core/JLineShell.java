@@ -108,14 +108,14 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 
 	private int historySize;
 
-	private boolean disableColor = false;
+	private boolean porcelain = false;
 
 	public void run() {
 		reader = createConsoleReader();
 
 		setPromptPath(null);
 
-		JLineLogHandler handler = new JLineLogHandler(reader, this, disableColor);
+		JLineLogHandler handler = new JLineLogHandler(reader, this, usingColor());
 		JLineLogHandler.prohibitRedraw(); // Affects this thread only
 		Logger mainLogger = Logger.getLogger("");
 		removeHandlers(mainLogger);
@@ -279,6 +279,11 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 		}
 	}
 
+
+	private boolean usingColor() {
+		return reader.getTerminal().isAnsiSupported() && !porcelain;
+	}
+
 	@Override
 	public void setPromptPath(final String path) {
 		setPromptPath(path, false);
@@ -286,7 +291,7 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 
 	@Override
 	public void setPromptPath(final String path, final boolean overrideStyle) {
-		if (reader.getTerminal().isAnsiSupported() && (!disableColor)) {
+		if (usingColor()) {
 			// ANSIBuffer ansi = JLineLogHandler.getANSIBuffer();
 			Ansi ansi = ansi();
 			if (path == null || "".equals(path)) {
@@ -342,7 +347,7 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 	}
 
 	private void flashMessageRenderer() {
-		if (!reader.getTerminal().isAnsiSupported() || disableColor) {
+		if (!usingColor()) {
 			return;
 		}
 		// Setup a thread to ensure flash messages are displayed and cleared correctly
@@ -388,7 +393,7 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 		Assert.hasText(slot, "Slot name must be specified for a flash message");
 
 		if (Shell.WINDOW_TITLE_SLOT.equals(slot)) {
-			if (reader != null && reader.getTerminal().isAnsiSupported() && !disableColor) {
+			if (reader != null && usingColor()) {
 				// We can probably update the window title, as requested
 				if (!StringUtils.hasText(message)) {
 					System.out.println("No text");
@@ -406,7 +411,7 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 
 			return;
 		}
-		if ((reader != null && !reader.getTerminal().isAnsiSupported() && !disableColor)) {
+		if ((reader != null && !usingColor())) {
 			super.flash(level, message, slot);
 			return;
 		}
@@ -694,10 +699,10 @@ public abstract class JLineShell extends AbstractShell implements Shell, Runnabl
 	}
 
 	/**
-	 * @param disableColor if true, disables colorization
+	 * @param porcelain if true, disables colorization
      */
-	public void setDisableColor(boolean disableColor) {
-		this.disableColor = disableColor;
+	public void setPorcelain(boolean porcelain) {
+		this.porcelain = porcelain;
 	}
 
 	private static boolean isAppleTerminal() {

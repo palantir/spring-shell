@@ -64,13 +64,13 @@ public class JLineLogHandler extends Handler {
 		this(reader, shellPromptAccessor, false);
 	}
 
-	public JLineLogHandler(final ConsoleReader reader, final ShellPromptAccessor shellPromptAccessor, boolean disableColor) {
+	public JLineLogHandler(final ConsoleReader reader, final ShellPromptAccessor shellPromptAccessor, boolean usingColor) {
 		Assert.notNull(reader, "Console reader required");
 		Assert.notNull(shellPromptAccessor, "Shell prompt accessor required");
 		this.reader = reader;
 		this.shellPromptAccessor = shellPromptAccessor;
 		this.userInterfaceThreadName = Thread.currentThread().getName();
-		this.ansiSupported = reader.getTerminal().isAnsiSupported() && (!disableColor);
+		this.ansiSupported = usingColor;
 
 		setFormatter(new Formatter() {
 			@Override

@@ -39,7 +39,7 @@ public class SimpleShellCommandLineOptions {
 	Map<String, String> extraSystemProperties = new HashMap<String, String>();
 	int historySize = DEFAULT_HISTORY_SIZE;
 	boolean disableCommands;
-	boolean disableColor = false;
+	boolean porcelain = false;
 
 	public static CommandLine parseCommandLine(String[] args)
 			throws IOException {
@@ -83,8 +83,8 @@ public class SimpleShellCommandLineOptions {
 				}
 			} else if (arg.equals("--disableInternalCommands")) {
 				options.disableCommands = true;
-			} else if (arg.equals("--disableColor")) {
-				options.disableColor = true;
+			} else if (arg.equals("--porcelain")) {
+				options.porcelain = true;
 			} else if (arg.equals("--help")) {
 				printUsage();
 				System.exit(0);
@@ -119,7 +119,7 @@ public class SimpleShellCommandLineOptions {
 		}
 
 		return new CommandLine(args, options.historySize, options.executeThenQuit, options.disableCommands,
-				options.disableColor);
+				options.porcelain);
 	}
 
 	private static void printUsage() {

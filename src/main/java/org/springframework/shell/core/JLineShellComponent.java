@@ -108,7 +108,7 @@ public class JLineShellComponent extends JLineShell implements SmartLifecycle, A
 		}
 		
 		setHistorySize(commandLine.getHistorySize());
-		setDisableColor(commandLine.isDisableColor());
+		setPorcelain(commandLine.isPorcelain());
 		if (commandLine.getShellCommandsToExecute() != null) {
 			setPrintBanner(false);
 		}
@@ -238,4 +238,9 @@ public class JLineShellComponent extends JLineShell implements SmartLifecycle, A
 	protected String getVersion() {
 		return version;
 	}
+
+	public CommandLine getCommandLine() {
+		return commandLine;
+	}
+
 }

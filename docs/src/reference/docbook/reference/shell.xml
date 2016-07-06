@@ -297,7 +297,8 @@ public class HelloWorldCommands implements CommandMarker {
       </listitem>
 
       <listitem>
-        <para><literal>--disableColor</literal> - Flag that disables colorization.  There is no argument to this option.
+        <para><literal>--porcelain</literal> - Flag that disables colorization and creates output in an
+          easy-to-parse format for scripts.  There is no argument to this option.
         </para>
       </listitem>
     </itemizedlist>
