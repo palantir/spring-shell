@@ -1,4 +1,4 @@
-package org.springframework.shell;
+package org.springframework.shell.core;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.junit.Assert;
 
 import org.junit.Test;
-import org.springframework.shell.core.JLineShellComponent;
+import org.springframework.shell.Bootstrap;
 import org.springframework.shell.support.logging.HandlerUtils;
 
 public class SimpleShellCommandLineOptionsTest {

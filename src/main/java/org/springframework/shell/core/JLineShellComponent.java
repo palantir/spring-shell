@@ -17,6 +17,7 @@ package org.springframework.shell.core;
 
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -239,7 +240,8 @@ public class JLineShellComponent extends JLineShell implements SmartLifecycle, A
 		return version;
 	}
 
-	public CommandLine getCommandLine() {
+	@VisibleForTesting
+	CommandLine getCommandLine() {
 		return commandLine;
 	}
 
