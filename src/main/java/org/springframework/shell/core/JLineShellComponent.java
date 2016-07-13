@@ -17,6 +17,7 @@ package org.springframework.shell.core;
 
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -108,6 +109,7 @@ public class JLineShellComponent extends JLineShell implements SmartLifecycle, A
 		}
 		
 		setHistorySize(commandLine.getHistorySize());
+		setPorcelain(commandLine.isPorcelain());
 		if (commandLine.getShellCommandsToExecute() != null) {
 			setPrintBanner(false);
 		}
@@ -237,4 +239,10 @@ public class JLineShellComponent extends JLineShell implements SmartLifecycle, A
 	protected String getVersion() {
 		return version;
 	}
+
+	@VisibleForTesting
+	CommandLine getCommandLine() {
+		return commandLine;
+	}
+
 }

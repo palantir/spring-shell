@@ -295,6 +295,12 @@ public class HelloWorldCommands implements CommandMarker {
 	<literal>org.springframework.shell.commands</literal> package as well as the section in this documentation
 	of Built in commands.</para>
       </listitem>
+
+      <listitem>
+        <para><literal>--porcelain</literal> - Flag that disables colorization and creates output in an
+          easy-to-parse format for scripts.  There is no argument to this option.
+        </para>
+      </listitem>
     </itemizedlist>
   </section>
 
