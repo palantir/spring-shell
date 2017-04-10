@@ -59,6 +59,52 @@ public class SimpleParserTests {
 	private ArrayList<Completion> candidates = new ArrayList<Completion>();
 
 	@Test
+	public void testParse_IgnoresLeadingAndTrailingWhitespace() {
+		parser.add(new MyCommands());
+		parser.add(new StringConverter());
+
+		ParseResult expectedResult = parser.parse("bar --option1 foo");
+		assertThat(expectedResult, not(nullValue()));
+		assertThat(parser.parse("\n\t bar --option1 foo"), equalTo(expectedResult));
+		assertThat(parser.parse("bar --option1 foo \t\n"), equalTo(expectedResult));
+	}
+
+	@Test
+	public void testParse_IgnoresExcessWhitespaceBetweenArguments() {
+		parser.add(new MyCommands());
+		parser.add(new StringConverter());
+
+		ParseResult withoutExtraSpaces = parser.parse("bar --option1 foo");
+		ParseResult withExtraSpaces = parser.parse("bar      --option1          foo");
+		assertThat(withExtraSpaces, equalTo(withoutExtraSpaces));
+		assertThat(withoutExtraSpaces, not(nullValue()));
+	}
+
+	@Test
+	public void testParse_DoesNotRemoveSpacesFromArguments() {
+		parser.add(new MyCommands());
+		parser.add(new StringConverter());
+
+		// Check double quotes
+		ParseResult parseResult = parser.parse("bar --option1 \"foo    foo\"");
+		assertThat(parseResult.getArguments(), arrayContaining((Object)"foo    foo"));
+
+		// Check single quotes
+		parseResult = parser.parse("bar --option1 'bar  bar'");
+		assertThat(parseResult.getArguments(), arrayContaining((Object)"bar  bar"));
+	}
+
+	@Test
+	public void testParse_handlesSpacesAndQuotes() {
+		parser.add(new MyCommands());
+		parser.add(new StringConverter());
+
+		ParseResult parseResult = parser.parse("   bar     --option1   \"foo'    foo\"    ");
+		assertThat(parseResult.getMethod().getName(), equalTo("bar"));
+		assertThat(parseResult.getArguments(), arrayContaining((Object)"foo'    foo"));
+	}
+
+	@Test
 	public void testSHL170_ValueMadeOfSpacesOK() {
 		parser.add(new MyCommands());
 		parser.add(new StringConverter());
