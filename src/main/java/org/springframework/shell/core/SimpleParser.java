@@ -425,6 +425,10 @@ public class SimpleParser implements Parser {
 	 * @return a non-<code>null</code> string
 	 */
 	String normalise(final String rawInput) {
+		// If input might have a quoted argument, let tokenizer handle spaces
+		if (rawInput.contains("'") || rawInput.contains("\"")) {
+			return rawInput.trim();
+		}
 		// Replace all multiple spaces with a single space and then trim
 		return rawInput.replaceAll(" +", " ").trim();
 	}
